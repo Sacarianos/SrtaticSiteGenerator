@@ -1,9 +1,9 @@
-from textnode import TextNode, TextType
 import re
 
+from textnode import TextNode, TextType
 
 
-def text_textnodes(text):
+def text_to_textnodes(text):
     nodes = [TextNode(text, TextType.TEXT)]
     nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
     nodes = split_nodes_delimiter(nodes, "*", TextType.ITALIC)
@@ -12,14 +12,15 @@ def text_textnodes(text):
     nodes = split_nodes_link(nodes)
     return nodes
 
+
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
-    new_node = []
-    for node in old_nodes:
-        if node.text_type != TextType.TEXT:
-            new_node.append(old_nodes)
+    new_nodes = []
+    for old_node in old_nodes:
+        if old_node.text_type != TextType.TEXT:
+            new_nodes.append(old_node)
             continue
         split_nodes = []
-        sections = old_nodes.split(delimiter)
+        sections = old_node.text.split(delimiter)
         if len(sections) % 2 == 0:
             raise ValueError("Invalid markdown, formatted section not closed")
         for i in range(len(sections)):
@@ -29,8 +30,8 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
                 split_nodes.append(TextNode(sections[i], TextType.TEXT))
             else:
                 split_nodes.append(TextNode(sections[i], text_type))
-        new_node.extend(split_nodes)
-    return new_node  
+        new_nodes.extend(split_nodes)
+    return new_nodes
 
 
 def split_nodes_image(old_nodes):
@@ -49,7 +50,7 @@ def split_nodes_image(old_nodes):
             if len(sections) != 2:
                 raise ValueError("Invalid markdown, image section not closed")
             if sections[0] != "":
-                 new_nodes.append(TextNode(sections[0], TextType.TEXT))
+                new_nodes.append(TextNode(sections[0], TextType.TEXT))
             new_nodes.append(
                 TextNode(
                     image[0],
@@ -85,14 +86,10 @@ def split_nodes_link(old_nodes):
         if original_text != "":
             new_nodes.append(TextNode(original_text, TextType.TEXT))
     return new_nodes
-        
-    
-        
-
 
 
 def extract_markdown_images(text):
-    matches =  re.findall(r"!\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
+    pattern = r"!\[([^\[\]]*)\]\(([^\(\)]*)\)"
     matches = re.findall(pattern, text)
     return matches
 
@@ -101,7 +98,3 @@ def extract_markdown_links(text):
     pattern = r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)"
     matches = re.findall(pattern, text)
     return matches
-
-
-
-              

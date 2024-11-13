@@ -2,14 +2,12 @@ from htmlnode import ParentNode
 from inline_markdown import text_to_textnodes
 from textnode import text_node_to_html_node
 
-
 block_type_paragraph = "paragraph"
 block_type_heading = "heading"
 block_type_code = "code"
 block_type_quote = "quote"
 block_type_olist = "ordered_list"
 block_type_ulist = "unordered_list"
-
 
 
 def markdown_to_blocks(markdown):
@@ -21,6 +19,7 @@ def markdown_to_blocks(markdown):
         block = block.strip()
         filtered_blocks.append(block)
     return filtered_blocks
+
 
 def block_to_block_type(block):
     lines = block.split("\n")
@@ -62,8 +61,6 @@ def markdown_to_html_node(markdown):
         children.append(html_node)
     return ParentNode("div", children, None)
 
-        
-
 
 def block_to_html_node(block):
     block_type = block_to_block_type(block)
@@ -81,11 +78,6 @@ def block_to_html_node(block):
         return quote_to_html_node(block)
     raise ValueError("Invalid block type")
 
-def paragraph_to_html_node(block):
-    lines = block.split("\n")
-    paragraph = " ".join(lines)
-    children = text_to_children(paragraph)
-    return ParentNode("p", children)
 
 def text_to_children(text):
     text_nodes = text_to_textnodes(text)
@@ -94,6 +86,14 @@ def text_to_children(text):
         html_node = text_node_to_html_node(text_node)
         children.append(html_node)
     return children
+
+
+def paragraph_to_html_node(block):
+    lines = block.split("\n")
+    paragraph = " ".join(lines)
+    children = text_to_children(paragraph)
+    return ParentNode("p", children)
+
 
 def heading_to_html_node(block):
     level = 0
